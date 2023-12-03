@@ -1,4 +1,7 @@
-﻿using Azure.Storage.Blobs;
+﻿using Azure;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -47,8 +50,9 @@ public class IndexModel : PageModel
 
             try
             {
+                string storageAccountKey = await GetSecretFromKeyVault("StorageAcccountKey");
                 string connectionString =
-                    $"DefaultEndpointsProtocol=https;AccountName={_azureConfig.StorageAccountName};AccountKey={_azureConfig.StorageAcccountKey};EndpointSuffix=core.windows.net";
+                    $"DefaultEndpointsProtocol=https;AccountName={_azureConfig.StorageAccountName};AccountKey={storageAccountKey};EndpointSuffix=core.windows.net";
                 BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
 
                 BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(_azureConfig.ContainerName);
@@ -71,11 +75,19 @@ public class IndexModel : PageModel
             Message = "No file uploaded";
         }
     }
+
+    private async Task<string> GetSecretFromKeyVault(string secretName)
+    {
+        var secretClient = new SecretClient(new Uri(_azureConfig.KeyVaultURI), new DefaultAzureCredential());
+        Response<KeyVaultSecret>? secretResponse = await secretClient.GetSecretAsync(secretName);
+        return secretResponse.Value.Value;
+    }
 }
 
 public class AzureConfig
 {
-    public string StorageAccountName { get; set; }
-    public string StorageAcccountKey { get; set; }
-    public string ContainerName { get; set; }
+    public string StorageAccountName { get; set; } = string.Empty;
+    public string StorageAccountKey { get; set; } = string.Empty;
+    public string ContainerName { get; set; } = string.Empty;
+    public string KeyVaultURI { get; set; } = string.Empty;
 }
