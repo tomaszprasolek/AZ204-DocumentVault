@@ -8,6 +8,19 @@ resource resStorageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
     name: 'Standard_LRS'
   }
   kind: 'BlobStorage'
+  properties:{
+    accessTier: 'Hot'
+  }
+}
+
+resource resBlobService 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01' = {
+  parent: resStorageAccount
+  name: 'default'
+}
+
+resource resBlobContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = {
+  parent: resBlobService
+  name: 'default'
 }
 
 resource resKeyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
