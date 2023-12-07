@@ -8,3 +8,8 @@ Deploy Bicep script when create resource group in it:
 ```
 az deployment sub create --location northeurope --template-file .\AZ204-DocumentVault\Bicep\main.bicep
 ```
+
+Create all needed resources:
+```
+az deployment group create --resource-group rg-DocumentVault-ne --template-file .\AZ204-DocumentVault\Bicep\main.bicep --parameter parPrincipalId='azure-user-object-id'
+```
