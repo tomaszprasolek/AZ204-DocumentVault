@@ -20,9 +20,23 @@ resource resBlobService 'Microsoft.Storage/storageAccounts/blobServices@2023-01-
 
 resource resBlobContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = {
   parent: resBlobService
-  name: 'default'
+  name: 'documents'
 }
 
+// Role assignment
+var varRoleStorageAccountContributor = '17d1049b-9a84-46fb-8f53-869881c3d3ab' // Storage account contributor
+
+resource resStorageAccountContributorRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(subscription().subscriptionId, resourceGroup().name, resBlobContainer.name, varRoleStorageAccountContributor, parPrincipalId)
+  scope: resBlobContainer
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', varRoleStorageAccountContributor)
+    principalId: parPrincipalId
+    principalType: 'User'
+  }
+}
+
+/*
 resource resKeyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: 'documentsKeyVault'
   location: parLocation
@@ -46,3 +60,4 @@ resource resRegistryRoleAssignment 'Microsoft.Authorization/roleAssignments@2022
     principalType: 'User'
   }
 }
+*/
