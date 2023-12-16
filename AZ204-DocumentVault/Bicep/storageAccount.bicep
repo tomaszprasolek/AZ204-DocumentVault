@@ -37,21 +37,4 @@ resource resStorageAccountContributorRoleAssignment 'Microsoft.Authorization/rol
   }
 }
 
-// App service
-module modAppService 'appService.bicep' = {
-  name: 'modAppService'
-  params: {
-    parLocation: parLocation
-  }
-}
-
-// Key vault
-module modKeyVault 'keyVault.bicep' = {
-  name: 'modKeyVault'
-  params: {
-    parLocation: parLocation
-    parPrincipalId: parPrincipalId
-    parAppServiceObjectId: modAppService.outputs.outAppServiceObjectId
-    parStorageAccountKey: resStorageAccount.listKeys().keys[0].value
-  }
-}
+output storageAccountName string = resStorageAccount.name

@@ -50,7 +50,7 @@ public class IndexModel : PageModel
 
             try
             {
-                string storageAccountKey = await GetSecretFromKeyVault("StorageAcccountKey");
+                string storageAccountKey = await GetSecretFromKeyVault("StorageAccountKey");
                 string connectionString =
                     $"DefaultEndpointsProtocol=https;AccountName={_azureConfig.StorageAccountName};AccountKey={storageAccountKey};EndpointSuffix=core.windows.net";
                 BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
