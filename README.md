@@ -1,6 +1,13 @@
 # AZ204-DocumentVault
 Azure Document Vault with Expiry &amp; CDN Integration (Develop for Azure storage)
 
+## Azure resources
+
+- Azure App Service - web application to upload documents to Azure
+- Azure Storage - to store the uploaded documents
+- Azure Key Vault - to store the secrets
+
+
 ## Commands
 
 Deploy Bicep script when create resource group in it:
