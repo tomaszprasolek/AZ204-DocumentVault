@@ -1,11 +1,11 @@
-﻿using Azure;
-using Azure.Identity;
+﻿using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace AZ204_DocumentVault.Pages;
 
@@ -67,7 +67,23 @@ public class IndexModel : PageModel
             }
             catch (Exception e)
             {
-                Message = e.ToString();
+                Message = "Storage account error" + Environment.NewLine;
+                Message += e.ToString();
+            }
+
+            try
+            {
+                // Save document data: name and tags
+                var document = new Document(Guid.NewGuid().ToString(), 
+                    DocumentName, 
+                    postedFile.FileName, 
+                    tagsField);
+                await GetContainer().CreateItemAsync(document);
+            }
+            catch (Exception e)
+            {
+                Message = "Cosmos DB error" + Environment.NewLine;
+                Message += e.ToString();
             }
         }
         else
@@ -79,8 +95,21 @@ public class IndexModel : PageModel
     private async Task<string> GetSecretFromKeyVault(string secretName)
     {
         var secretClient = new SecretClient(new Uri(_azureConfig.KeyVaultURI), new DefaultAzureCredential());
-        Response<KeyVaultSecret>? secretResponse = await secretClient.GetSecretAsync(secretName);
+        Azure.Response<KeyVaultSecret>? secretResponse = await secretClient.GetSecretAsync(secretName);
         return secretResponse.Value.Value;
+    }
+    
+    private static Container GetContainer()
+    {
+        string cosmosDbUri = "https://cosdb-documentvault-ne.documents.azure.com:443/";
+        string key = "vs1OfvRHqeXxk3U8sybqq1HFqMwR6ZLSjrAt7bSNlSqtZykrYFfN0tEbGPgeEmK67nHfvo27GjT1ACDbq2eTUA==";
+        
+        string connectionString = $"AccountEndpoint={cosmosDbUri};AccountKey={key}";
+        CosmosClient cosmosClient = new CosmosClient(connectionString);
+
+        Database? db = cosmosClient.GetDatabase("DocumentsVault");
+        Container? container = db.GetContainer("Documents");
+        return container;
     }
 }
 
@@ -90,4 +119,22 @@ public class AzureConfig
     public string StorageAccountKey { get; set; } = string.Empty;
     public string ContainerName { get; set; } = string.Empty;
     public string KeyVaultURI { get; set; } = string.Empty;
+}
+
+public class Document
+{
+    [JsonProperty("id")]
+    public string Id { get; }
+    public string Name { get; }
+    public string FileName { get; }
+    public string[]? Tags { get; } = Array.Empty<string>();
+
+    public Document(string id, string name, string fileName, string tagsCommaSeparated)
+    {
+        Id = id;
+        Name = name;
+        FileName = fileName;
+        if (!string.IsNullOrWhiteSpace(tagsCommaSeparated))
+            Tags = tagsCommaSeparated.Split(',');
+    }
 }
