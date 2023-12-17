@@ -5,13 +5,16 @@ param parLocation string = resourceGroup().location
 param parPrincipalId string
 
 param parAppServiceObjectId string
-@secure()
-param parStorageAccountKey string
+param parStorageAccountName string
 
 // Variables
 var varTenantId = subscription().tenantId
 
 // Resources
+resource resStorageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
+  name: parStorageAccountName
+}
+
 resource resKeyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: 'documentsKeyVault'
   location: parLocation
@@ -51,6 +54,6 @@ resource resSecret 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
   parent: resKeyVault
   name: 'StorageAccountKey'
   properties: {
-    value: parStorageAccountKey
+    value: resStorageAccount.listKeys().keys[0].value
   }
 }
