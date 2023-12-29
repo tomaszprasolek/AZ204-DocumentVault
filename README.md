@@ -7,6 +7,10 @@ Azure Document Vault with Expiry &amp; CDN Integration (Develop for Azure storag
 - Azure Storage - to store the uploaded documents
 - Azure Key Vault - to store the secrets
 
+## TODO
+- Bicep - create Cosmos DB using main script
+- Bicep - add Cosmos DB key to Key Vault
+- Setup CI/CD in Github Actions
 
 ## Commands
 
