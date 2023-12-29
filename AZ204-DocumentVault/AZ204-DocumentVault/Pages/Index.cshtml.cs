@@ -78,7 +78,10 @@ public class IndexModel : PageModel
                     DocumentName, 
                     postedFile.FileName, 
                     tagsField);
-                await GetContainer().CreateItemAsync(document);
+                
+                var container = await GetContainerAsync();
+                
+                await container.CreateItemAsync(document);
             }
             catch (Exception e)
             {
@@ -94,17 +97,16 @@ public class IndexModel : PageModel
 
     private async Task<string> GetSecretFromKeyVault(string secretName)
     {
-        var secretClient = new SecretClient(new Uri(_azureConfig.KeyVaultURI), new DefaultAzureCredential());
+        var secretClient = new SecretClient(new Uri(_azureConfig.KeyVaultUri), new DefaultAzureCredential());
         Azure.Response<KeyVaultSecret>? secretResponse = await secretClient.GetSecretAsync(secretName);
         return secretResponse.Value.Value;
     }
     
-    private static Container GetContainer()
+    private async Task<Container> GetContainerAsync()
     {
-        string cosmosDbUri = "https://cosdb-documentvault-ne.documents.azure.com:443/";
-        string key = "vs1OfvRHqeXxk3U8sybqq1HFqMwR6ZLSjrAt7bSNlSqtZykrYFfN0tEbGPgeEmK67nHfvo27GjT1ACDbq2eTUA==";
+        string key = await GetSecretFromKeyVault("CosmosDbKey");
         
-        string connectionString = $"AccountEndpoint={cosmosDbUri};AccountKey={key}";
+        string connectionString = $"AccountEndpoint={_azureConfig.CosmosDbUri};AccountKey={key}";
         CosmosClient cosmosClient = new CosmosClient(connectionString);
 
         Database? db = cosmosClient.GetDatabase("DocumentsVault");
@@ -118,16 +120,18 @@ public class AzureConfig
     public string StorageAccountName { get; set; } = string.Empty;
     public string StorageAccountKey { get; set; } = string.Empty;
     public string ContainerName { get; set; } = string.Empty;
-    public string KeyVaultURI { get; set; } = string.Empty;
+    public string KeyVaultUri { get; set; } = string.Empty;
+    public string CosmosDbUri { get; set; } = string.Empty;
 }
 
+// To use in Azure Cosmos DB
 public class Document
 {
     [JsonProperty("id")]
     public string Id { get; }
     public string Name { get; }
     public string FileName { get; }
-    public string[]? Tags { get; } = Array.Empty<string>();
+    public string[]? Tags { get; }
 
     public Document(string id, string name, string fileName, string tagsCommaSeparated)
     {
@@ -135,6 +139,8 @@ public class Document
         Name = name;
         FileName = fileName;
         if (!string.IsNullOrWhiteSpace(tagsCommaSeparated))
-            Tags = tagsCommaSeparated.Split(',');
+            Tags = tagsCommaSeparated.Split(',')
+                .Select(x => x.Trim())
+                .ToArray();
     }
 }
