@@ -18,6 +18,14 @@ module modAppService 'appService.bicep' = {
   }
 }
 
+// Cosmos DB
+module modCosmosDb 'cosmosDb.bicep' = {
+  name: 'modCosmosDb'
+  params: {
+    parLocation: parLocation
+  }
+}
+
 // Key vault
 module modKeyVault 'keyVault.bicep' = {
   name: 'modKeyVault'
@@ -26,5 +34,6 @@ module modKeyVault 'keyVault.bicep' = {
     parPrincipalId: parPrincipalId
     parAppServiceObjectId: modAppService.outputs.outAppServiceObjectId
     parStorageAccountName: modStorageAccount.outputs.storageAccountName
+    parCosmosDbName: modCosmosDb.outputs.cosmosDbName
   }
 }

@@ -44,3 +44,5 @@ resource resContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/contai
     }
   }
 }
+
+output cosmosDbName string = resDbAccount.name
