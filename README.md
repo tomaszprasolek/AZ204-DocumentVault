@@ -8,9 +8,10 @@ Azure Document Vault with Expiry &amp; CDN Integration (Develop for Azure storag
 - Azure Key Vault - to store the secrets
 
 ## TODO
-- [ ] Bicep - create Cosmos DB using main script
-- [ ] Bicep - add Cosmos DB key to Key Vault
-- [ ] Setup CI/CD in Github Actions
+- [X] Bicep - create Cosmos DB using main script
+- [X] Bicep - add Cosmos DB key to Key Vault
+- [X] Setup CI/CD in Github Actions
+- [ ] Remove publishToAzure.run - use `git filter-repo` >> https://gist.github.com/tomaszprasolek/a1d66512bf30afd5019df6b20a2255ab
 
 ## Commands
 
