@@ -28,8 +28,46 @@
             </div>
         </form>
         <br/>
-        <p><b>@Model.Message</b></p>
+        <p>
+            <b>@Model.Message</b>
+        </p>
         <p>@Model.DocumentName</p>
         <p>@Model.Tags</p>
+    </div>
+    
+    <div style="width: 50%">
+        <table rules="all">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>File name</th>
+                <th>Tags</th>
+                <th>Download</th>
+                <th>Generate link</th>
+              </tr>
+            </thead>
+            <tbody>
+
+            @for (int i = 0; i < @Model.Documents.Count; i++)
+            {
+                Document? document = @Model.Documents[i];
+                <tr>
+                    <td>@(i+1)</td>
+                    <td>@document.Name</td>
+                    <td>@document.FileName</td>
+                    <td>@document.Tags</td>
+                    <td>
+                        <form asp-page-handler="DownloadFile" method="post">
+                            <button class="btn btn-default">Download</button>
+                             <input type="hidden" name="fileName" value="@document.FileName" />
+                        </form>
+                    </td>
+                    <td>TODO: generate link button</td>
+                </tr>
+            }
+
+            </tbody>
+        </table>
     </div>
 </div>

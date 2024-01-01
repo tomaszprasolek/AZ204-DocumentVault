@@ -2,8 +2,10 @@
 using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
@@ -12,12 +14,13 @@ namespace AZ204_DocumentVault.Pages;
 public class IndexModel : PageModel
 {
     private readonly ILogger<IndexModel> _logger;
+    private AzureConfig _azureConfig;
 
     public string Message { get; set; } = string.Empty;
     public string DocumentName { get; set; } = string.Empty;
     public string Tags { get; set; } = string.Empty;
 
-    private AzureConfig _azureConfig;
+    public List<Document> Documents { get; set; } = new();
     
     
     public IndexModel(ILogger<IndexModel> logger, IOptions<AzureConfig> config)
@@ -26,8 +29,39 @@ public class IndexModel : PageModel
         _azureConfig = config.Value;
     }
 
-    public void OnGet()
+    public async Task<IActionResult> OnGet()
     {
+        Container container = await GetContainerAsync();
+
+        IOrderedQueryable<Document>? queryable = container.GetItemLinqQueryable<Document>();
+        
+        // Convert to feed iterator
+        using FeedIterator<Document> linqFeed = queryable.ToFeedIterator();
+
+        while (linqFeed.HasMoreResults)
+        {
+            FeedResponse<Document> response = await linqFeed.ReadNextAsync();
+            
+            // Iterate query results
+            foreach (Document item in response)
+            {
+                Documents.Add(item);
+            }
+        }
+
+        return Page();
+    }
+
+    public async Task<IActionResult> OnPostDownloadFile(string fileName)
+    {
+        BlobContainerClient containerClient = await GetBlobContainerClient();
+
+        BlobClient? blobClient = containerClient.GetBlobClient(fileName);
+
+        var blob = await blobClient.DownloadAsync();
+
+        var stream = await blobClient.OpenReadAsync();
+        return File(stream, blob.Value.ContentType, fileName);
     }
 
     public async Task OnPostAsync()
@@ -42,20 +76,9 @@ public class IndexModel : PageModel
         {
             IFormFile postedFile = Request.Form.Files["documentFile"]!;
 
-            // using var ms = new MemoryStream();
-            // postedFile.CopyTo(ms);
-            // var fileBytes = ms.ToArray();
-            // string s = Convert.ToBase64String(fileBytes);
-            // // act on the Base64 data
-
             try
             {
-                string storageAccountKey = await GetSecretFromKeyVault("StorageAccountKey");
-                string connectionString =
-                    $"DefaultEndpointsProtocol=https;AccountName={_azureConfig.StorageAccountName};AccountKey={storageAccountKey};EndpointSuffix=core.windows.net";
-                BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
-
-                BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(_azureConfig.ContainerName);
+                BlobContainerClient containerClient = await GetBlobContainerClient();
 
                 BlobClient blobClient = containerClient.GetBlobClient(postedFile.FileName);
 
@@ -93,6 +116,17 @@ public class IndexModel : PageModel
         {
             Message = "No file uploaded";
         }
+    }
+
+    private async Task<BlobContainerClient> GetBlobContainerClient()
+    {
+        string storageAccountKey = await GetSecretFromKeyVault("StorageAccountKey");
+        string connectionString =
+            $"DefaultEndpointsProtocol=https;AccountName={_azureConfig.StorageAccountName};AccountKey={storageAccountKey};EndpointSuffix=core.windows.net";
+        BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
+
+        BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(_azureConfig.ContainerName);
+        return containerClient;
     }
 
     private async Task<string> GetSecretFromKeyVault(string secretName)
