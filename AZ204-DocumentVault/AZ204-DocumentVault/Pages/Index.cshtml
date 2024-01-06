@@ -28,42 +28,63 @@
             </div>
         </form>
         <br/>
+        @if (!string.IsNullOrWhiteSpace(Model.DocumentDownloadLink))
+        {
+            <p>
+                Link to file:<br/>
+                <code>@Model.DocumentDownloadLink</code>
+            </p>
+        }
         <p>
             <b>@Model.Message</b>
         </p>
         <p>@Model.DocumentName</p>
         <p>@Model.Tags</p>
     </div>
-    
-    <div style="width: 50%">
+
+    <div>
         <table rules="all">
             <thead>
-              <tr>
+            <tr>
                 <th>#</th>
                 <th>Name</th>
                 <th>File name</th>
                 <th>Tags</th>
                 <th>Download</th>
                 <th>Generate link</th>
-              </tr>
+            </tr>
             </thead>
             <tbody>
 
-            @for (int i = 0; i < @Model.Documents.Count; i++)
+            @for (int i = 0; i < Model.Documents.Count; i++)
             {
-                Document? document = @Model.Documents[i];
+                Document? document = Model.Documents[i];
                 <tr>
-                    <td>@(i+1)</td>
+                    <td>@(i + 1)</td>
                     <td>@document.Name</td>
                     <td>@document.FileName</td>
                     <td>@document.Tags</td>
                     <td>
                         <form asp-page-handler="DownloadFile" method="post">
                             <button class="btn btn-default">Download</button>
-                             <input type="hidden" name="fileName" value="@document.FileName" />
+                            <input type="hidden" name="fileName" value="@document.FileName"/>
                         </form>
                     </td>
-                    <td>TODO: generate link button</td>
+                    <td>
+                        <form asp-page-handler="GenerateLink" method="post">
+                            <input type="hidden" name="fileName" value="@document.FileName"/>
+
+                            <label for="hoursToBeExpired">Expire time (in hrs):</label>
+                            <select id="hoursToBeExpired" name="hoursToBeExpired">
+                                <option value="1">1h</option>
+                                <option value="2">2h</option>
+                                <option value="4">4h</option>
+                                <option value="8">8h</option>
+                            </select>
+
+                            <button class="btn btn-default">Generate download link</button>
+                        </form>
+                    </td>
                 </tr>
             }
 

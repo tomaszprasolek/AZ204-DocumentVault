@@ -2,6 +2,7 @@
 using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Sas;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Azure.Cosmos;
@@ -21,6 +22,7 @@ public class IndexModel : PageModel
     public string Tags { get; set; } = string.Empty;
 
     public List<Document> Documents { get; set; } = new();
+    public string DocumentDownloadLink { get; set; }
     
     
     public IndexModel(ILogger<IndexModel> logger, IOptions<AzureConfig> config)
@@ -31,7 +33,7 @@ public class IndexModel : PageModel
 
     public async Task<IActionResult> OnGet()
     {
-        Container container = await GetContainerAsync();
+        Container container = await GetCosmosDbContainerAsync();
 
         IOrderedQueryable<Document>? queryable = container.GetItemLinqQueryable<Document>();
         
@@ -62,6 +64,30 @@ public class IndexModel : PageModel
 
         var stream = await blobClient.OpenReadAsync();
         return File(stream, blob.Value.ContentType, fileName);
+    }
+
+    public async Task<IActionResult> OnPostGenerateLink(string id, string fileName, int hoursToBeExpired)
+    {
+        BlobContainerClient containerClient = await GetBlobContainerClient();
+
+        BlobClient? blobClient = containerClient.GetBlobClient(fileName);
+
+        DateTime expiresOn = DateTime.UtcNow.AddHours(hoursToBeExpired);
+        Uri? result = blobClient.GenerateSasUri(BlobSasPermissions.Read, new DateTimeOffset(expiresOn));
+        DocumentDownloadLink = result.ToString();
+        
+        Container container = await GetCosmosDbContainerAsync();
+        ItemResponse<Document>? response = await container.ReadItemAsync<Document>(id, new PartitionKey(id));
+        Document document = response.Resource;
+        
+        document.AddLink(new FileLink(DocumentDownloadLink, expiresOn));
+
+        await container.UpsertItemAsync(document, new PartitionKey(id));
+        
+        _logger.LogInformation("Generated link for file: {FileName}, expired after: {hoursToBeExpired}", 
+            fileName, hoursToBeExpired);
+        
+        return await OnGet();
     }
 
     public async Task OnPostAsync()
@@ -102,7 +128,7 @@ public class IndexModel : PageModel
                     postedFile.FileName, 
                     tagsField);
                 
-                var container = await GetContainerAsync();
+                var container = await GetCosmosDbContainerAsync();
                 
                 await container.CreateItemAsync(document);
             }
@@ -136,7 +162,7 @@ public class IndexModel : PageModel
         return secretResponse.Value.Value;
     }
     
-    private async Task<Container> GetContainerAsync()
+    private async Task<Container> GetCosmosDbContainerAsync()
     {
         string key = await GetSecretFromKeyVault("CosmosDbKey");
         
@@ -159,13 +185,15 @@ public class AzureConfig
 }
 
 // To use in Azure Cosmos DB
-public class Document
+public sealed class Document
 {
     [JsonProperty("id")]
     public string Id { get; }
     public string Name { get; }
     public string FileName { get; }
     public string[]? Tags { get; }
+    
+    public FileLink[]? FileLinks { get; private set; }
 
     public Document(string id, string name, string fileName, string tagsCommaSeparated)
     {
@@ -176,5 +204,27 @@ public class Document
             Tags = tagsCommaSeparated.Split(',')
                 .Select(x => x.Trim())
                 .ToArray();
+    }
+
+    public void AddLink(FileLink link)
+    {
+        if (FileLinks is null)
+            FileLinks = new[] {link};
+        else
+        {
+            FileLinks[FileLinks.Length + 1] = link;
+        }
+    }
+}
+
+public sealed class FileLink
+{
+    public string Url { get; }
+    public DateTime Expiration { get; }
+
+    public FileLink(string url, DateTime expiration)
+    {
+        Url = url;
+        Expiration = expiration;
     }
 }
