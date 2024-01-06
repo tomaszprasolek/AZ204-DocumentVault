@@ -72,6 +72,7 @@
                     </td>
                     <td>
                         <form asp-page-handler="GenerateLink" method="post">
+                            <input type="hidden" name="id" value="@document.Id"/>
                             <input type="hidden" name="fileName" value="@document.FileName"/>
 
                             <label for="hoursToBeExpired">Expire time (in hrs):</label>

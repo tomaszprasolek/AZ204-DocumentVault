@@ -68,6 +68,7 @@ public class IndexModel : PageModel
 
     public async Task<IActionResult> OnPostGenerateLink(string id, string fileName, int hoursToBeExpired)
     {
+        // Azure Blog container
         BlobContainerClient containerClient = await GetBlobContainerClient();
 
         BlobClient? blobClient = containerClient.GetBlobClient(fileName);
@@ -76,13 +77,12 @@ public class IndexModel : PageModel
         Uri? result = blobClient.GenerateSasUri(BlobSasPermissions.Read, new DateTimeOffset(expiresOn));
         DocumentDownloadLink = result.ToString();
         
+        // Azure Cosmos Db
         Container container = await GetCosmosDbContainerAsync();
-        ItemResponse<Document>? response = await container.ReadItemAsync<Document>(id, new PartitionKey(id));
-        Document document = response.Resource;
-        
-        document.AddLink(new FileLink(DocumentDownloadLink, expiresOn));
-
-        await container.UpsertItemAsync(document, new PartitionKey(id));
+        await container.PatchItemAsync<Document>(id, new PartitionKey(id), new List<PatchOperation>
+        {
+            PatchOperation.Add("/FileLinks/-", new FileLink(DocumentDownloadLink, expiresOn))
+        });
         
         _logger.LogInformation("Generated link for file: {FileName}, expired after: {hoursToBeExpired}", 
             fileName, hoursToBeExpired);
