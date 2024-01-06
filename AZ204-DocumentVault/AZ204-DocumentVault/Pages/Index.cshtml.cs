@@ -90,6 +90,20 @@ public class IndexModel : PageModel
         return await OnGet();
     }
 
+    public async Task<IActionResult> OnPostDeleteFile(string id, string fileName)
+    {
+        // Azure Blog container
+        BlobContainerClient containerClient = await GetBlobContainerClient();
+        await containerClient.DeleteBlobAsync(fileName);
+        
+        // Azure Cosmos Db
+        Container container = await GetCosmosDbContainerAsync();
+        await container.DeleteItemAsync<Document>(id, new PartitionKey(id));
+
+        Message = $"File {fileName} deleted";
+        return await OnGet();
+    }
+
     public async Task OnPostAsync()
     {
         DocumentName = Request.Form["documentName"]!;
