@@ -25,3 +25,10 @@ Create all needed resources:
 ```
 az deployment group create --resource-group rg-DocumentVault-ne --template-file .\AZ204-DocumentVault\Bicep\main.bicep --parameter parPrincipalId='azure-user-object-id'
 ```
+## Links 
+
+### Azure Cosmos Db
+
+- https://stackoverflow.com/questions/63243857/what-does-upsertitemasync-do-in-the-net-cosmos-db-client
+- https://learn.microsoft.com/en-us/azure/cosmos-db/partial-document-update
+- https://learn.microsoft.com/en-us/azure/cosmos-db/partial-document-update-getting-started?tabs=dotnet
