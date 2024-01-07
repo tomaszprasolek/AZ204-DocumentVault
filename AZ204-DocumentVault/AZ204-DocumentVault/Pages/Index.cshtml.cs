@@ -22,7 +22,7 @@ public class IndexModel : PageModel
     public string Tags { get; set; } = string.Empty;
 
     public List<Document> Documents { get; set; } = new();
-    public string DocumentDownloadLink { get; set; }
+    public string? DocumentDownloadLink { get; set; }
     
     
     public IndexModel(ILogger<IndexModel> logger, IOptions<AzureConfig> config)
@@ -104,7 +104,7 @@ public class IndexModel : PageModel
         return await OnGet();
     }
 
-    public async Task OnPostAsync()
+    public async Task<IActionResult> OnPostAsync()
     {
         DocumentName = Request.Form["documentName"]!;
 
@@ -156,6 +156,8 @@ public class IndexModel : PageModel
         {
             Message = "No file uploaded";
         }
+        
+        return await OnGet();
     }
 
     private async Task<BlobContainerClient> GetBlobContainerClient()
@@ -209,6 +211,20 @@ public sealed class Document
     
     public FileLink[]? FileLinks { get; private set; }
 
+    [JsonConstructor]
+    public Document(string id,
+        string name,
+        string fileName,
+        string[]? tags,
+        FileLink[]? fileLinks)
+    {
+        Id = id;
+        Name = name;
+        FileName = fileName;
+        Tags = tags;
+        FileLinks = fileLinks;
+    }
+
     public Document(string id, string name, string fileName, string tagsCommaSeparated)
     {
         Id = id;
@@ -218,6 +234,18 @@ public sealed class Document
             Tags = tagsCommaSeparated.Split(',')
                 .Select(x => x.Trim())
                 .ToArray();
+    }
+
+    public string GetTags()
+    {
+        if (Tags is null)
+            return string.Empty;
+
+        if (Tags.Length == 0)
+            return string.Empty;
+        
+        return Tags.Aggregate((a,
+                b) => $"{a}, {b}");
     }
 
     public void AddLink(FileLink link)
