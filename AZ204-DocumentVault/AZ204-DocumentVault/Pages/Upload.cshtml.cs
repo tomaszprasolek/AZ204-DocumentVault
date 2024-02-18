@@ -95,8 +95,9 @@ public class Upload : PageModel
                 // Save document data: name and tags
                 var document = new Document(Guid.NewGuid().ToString(), 
                     DocumentName, 
-                    postedFile.FileName, 
-                    tagsField);
+                    postedFile.FileName,
+                    tagsField,
+                    User.Identity!.Name!);
 
                 await _cosmosDbService.AddDocument(document);
             }

@@ -1,13 +1,14 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace AZ204_DocumentVault.Services.Models;
 
 public sealed class Document
 {
-    [JsonPropertyName("id")]
+    [JsonProperty("id")]
     public string Id { get; }
     public string Name { get; }
     public string FileName { get; }
+    public string UserName { get; }
     public string[]? Tags { get; }
     
     public FileLink[]? FileLinks { get; private set; }
@@ -16,21 +17,24 @@ public sealed class Document
     public Document(string id,
         string name,
         string fileName,
+        string userName,
         string[]? tags,
         FileLink[]? fileLinks)
     {
         Id = id;
         Name = name;
         FileName = fileName;
+        UserName = userName;
         Tags = tags;
         FileLinks = fileLinks;
     }
 
-    public Document(string id, string name, string fileName, string tagsCommaSeparated)
+    public Document(string id, string name, string fileName, string tagsCommaSeparated, string userName)
     {
         Id = id;
         Name = name;
         FileName = fileName;
+        UserName = userName;
         if (!string.IsNullOrWhiteSpace(tagsCommaSeparated))
             Tags = tagsCommaSeparated.Split(',')
                 .Select(x => x.Trim())
