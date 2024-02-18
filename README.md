@@ -27,9 +27,14 @@ az deployment group create --resource-group rg-DocumentVault-ne --template-file 
 ```
 ## Instructions how to run
 
+- Run Azure Bicep script: `main.bicep`
 - After create the resource in Azure, download publish profile from Azure and put it in repository secret on Github. Secret name: AZURE_WEBAPP_PUBLISH_PROFILE. It is needed to Github Actions, to deploy app to WebApp in Azure.
-- Add Redirect URI in `App registrations` to our app.
-  - `https://webapp-documentvault-ne.azurewebsites.net/signin-oidc`
+- Register the app in Azure:
+  - Open **App registrations** view in Azure
+  - Register new app
+  - Add Redirect URI in `App registrations` to our app.
+    - `https://webapp-documentvault-ne.azurewebsites.net/signin-oidc`
+  - Add `tenatId` and `clientId` to Github project secrets
 
 ## Links 
 
