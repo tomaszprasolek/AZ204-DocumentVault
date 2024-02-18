@@ -1,0 +1,103 @@
+﻿@page
+@model AZ204_DocumentVault.Pages.Upload
+@{
+    ViewData["Title"] = "Upload documents";
+}
+
+<div class="text-center">
+    <div style="width: 500px">
+        <p>Upload document:</p>
+        <form id="upload-document-form" method="post" enctype="multipart/form-data">
+            <div class="rendered-form">
+                <div class="formbuilder-text form-group field-text-1701599972839">
+                    <label for="text-1701599972839" class="formbuilder-text-label">Name<span class="formbuilder-required">*</span></label>
+                    <input type="text" class="form-control" name="documentName" access="false" id="text-1701599972839" required="required" aria-required="true">
+                </div>
+                <div class="formbuilder-textarea form-group field-textarea-1701599985857">
+                    <label for="textarea-1701599985857" class="formbuilder-textarea-label">Tags</label>
+                    <textarea type="textarea" placeholder="Every tag in new line" class="form-control" name="tags" access="false" id="textarea-1701599985857"></textarea>
+                </div>
+                <div class="formbuilder-file form-group field-file-1701599965152">
+                    <label for="file-1701599965152" class="formbuilder-file-label">Upload document file<span class="formbuilder-required">*</span></label>
+                    <input type="file" class="form-control" name="documentFile" access="false" multiple="multiple" id="file-1701599965152" required="required" aria-required="true">
+                </div>
+                <hr/>
+                <div class="formbuilder-button form-group field-button-1701600464319">
+                    <button type="submit" class="btn-primary btn" name="submitButton" access="false" id="button-1701600464319">Upload</button>
+                </div>
+            </div>
+        </form>
+        <br/>
+        @if (!string.IsNullOrWhiteSpace(Model.DocumentDownloadLink))
+        {
+            <p>
+                Link to file:<br/>
+                <code>@Model.DocumentDownloadLink</code>
+            </p>
+        }
+        <p>
+            <b>@Model.Message</b>
+        </p>
+        <p>@Model.DocumentName</p>
+        <p>@Model.Tags</p>
+    </div>
+
+    @if (Model.Documents.Count > 0)
+    {
+        <div>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>File name</th>
+                    <th>Tags</th>
+                    <th>Generate link</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                @for (int i = 0; i < Model.Documents.Count; i++)
+                {
+                    Document document = Model.Documents[i];
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>@document.Name</td>
+                        <td>@document.FileName</td>
+                        <td>@document.GetTags()</td>
+                        <td>
+                            <form asp-page-handler="GenerateLink" method="post">
+                                <input type="hidden" name="id" value="@document.Id"/>
+                                <input type="hidden" name="fileName" value="@document.FileName"/>
+
+                                <label for="hoursToBeExpired">Expire time (in hrs):</label>
+                                <select id="hoursToBeExpired" name="hoursToBeExpired">
+                                    <option value="1">1h</option>
+                                    <option value="2">2h</option>
+                                    <option value="4">4h</option>
+                                    <option value="8">8h</option>
+                                </select>
+                                <br/>
+                                <button class="btn btn-primary">Generate download link</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form asp-page-handler="DownloadFile" method="post">
+                                <button class="btn btn-primary">Download</button>
+                                <input type="hidden" name="fileName" value="@document.FileName"/>
+                            </form>
+                            <form asp-page-handler="DeleteFile" method="post">
+                                <input type="hidden" name="id" value="@document.Id"/>
+                                <input type="hidden" name="fileName" value="@document.FileName"/>
+                                <button class="btn btn-primary">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
