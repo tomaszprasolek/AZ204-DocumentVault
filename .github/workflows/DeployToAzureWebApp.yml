@@ -22,7 +22,8 @@ jobs:
     - name: Replace env vars in file
       uses: falnyr/replace-env-vars-action@v1.3.2
       env:
-        TOKEN: working
+        TenantId: ${{ secrets.TENANTID  }}
+        ClientId: ${{ secrets.CLIENTID  }}
       with:
         filename: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/AZ204-DocumentVault/appsettings.json
                    
