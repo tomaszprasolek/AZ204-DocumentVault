@@ -11,10 +11,16 @@ public class IndexModel : PageModel
     private readonly ILogger<IndexModel> _logger;
     public string TestConfig { get; set; }
     
-    public IndexModel(ILogger<IndexModel> logger, IOptions<AzureConfig> azureConfig) 
+    public IndexModel(ILogger<IndexModel> logger, 
+        IOptions<AzureConfig> azureConfig,
+        IConfiguration configuration
+        ) 
     {
         _logger = logger;
-        TestConfig = azureConfig.Value.Test;
+
+        string tenantId = configuration.GetSection("AzureAd:TenantId").Value!;
+        string clientId = configuration.GetSection("AzureAd:ClientId").Value!;
+        TestConfig = $"Client id: {clientId}, tenant id: {tenantId}";
     }
 
     public void OnGet()
