@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>AZ204_DocumentVault</RootNamespace>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <UserSecretsId>7140c0d6-0892-415d-9d4d-6438b900f939</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
