@@ -25,6 +25,12 @@ Create all needed resources:
 ```
 az deployment group create --resource-group rg-DocumentVault-ne --template-file .\AZ204-DocumentVault\Bicep\main.bicep --parameter parPrincipalId='azure-user-object-id'
 ```
+## Instructions how to run
+
+- After create the resource in Azure, download publish profile from Azure and put it in repository secret on Github. Secret name: AZURE_WEBAPP_PUBLISH_PROFILE. It is needed to Github Actions, to deploy app to WebApp in Azure.
+- Add Redirect URI in `App registrations` to our app.
+  - `https://webapp-documentvault-ne.azurewebsites.net/signin-oidc`
+
 ## Links 
 
 ### Azure Cosmos Db
@@ -32,4 +38,9 @@ az deployment group create --resource-group rg-DocumentVault-ne --template-file 
 - https://stackoverflow.com/questions/63243857/what-does-upsertitemasync-do-in-the-net-cosmos-db-client
 - https://learn.microsoft.com/en-us/azure/cosmos-db/partial-document-update
 - https://learn.microsoft.com/en-us/azure/cosmos-db/partial-document-update-getting-started?tabs=dotnet
+
+### Others
+
 - https://github.com/AzureAD/microsoft-identity-web/wiki/web-apps
+- https://brettmckenzie.net/posts/the-input-content-is-invalid-because-the-required-properties-id-are-missing/
+- https://learn.microsoft.com/en-us/troubleshoot/azure/active-directory/error-code-aadsts50011-redirect-uri-mismatch
