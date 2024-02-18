@@ -24,7 +24,7 @@ jobs:
       env:
         TOKEN: working
       with:
-        filename: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/appsettings.json
+        filename: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/AZ204-DocumentVault/appsettings.json
                    
     # Run dotnet build and publish
     - name: Publish
