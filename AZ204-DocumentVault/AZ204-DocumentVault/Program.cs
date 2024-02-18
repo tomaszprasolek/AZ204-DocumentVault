@@ -1,4 +1,6 @@
 using AZ204_DocumentVault.Pages;
+using AZ204_DocumentVault.Services;
+using AZ204_DocumentVault.Services.Models;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
@@ -19,6 +21,10 @@ builder.Services.AddAuthorization(options =>
 builder.Services
     .AddRazorPages()
     .AddMicrosoftIdentityUI();
+
+builder.Services.AddScoped<IKeyVaultService, KeyVaultService>();
+builder.Services.AddScoped<ICosmosDbService, CosmosDbService>();
+builder.Services.AddScoped<IStorageAccountService, StorageAccountService>();
 
 builder.Services.Configure<AzureConfig>(
     builder.Configuration.GetSection(nameof(AzureConfig)));
