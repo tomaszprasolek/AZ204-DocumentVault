@@ -33,7 +33,9 @@ Azure Document Vault with Expiry &amp; CDN Integration (Develop for Azure storag
     - `App registrations >> New registration`
     - Enter app name
     - Select `Accounts in this organizational directory only (Default Directory only - Single tenant)`
-    - Redirect URI >> Web >> Link: `https://webapp-documentvault-ne.azurewebsites.net/signin-oid`
+    - Redirect URI >> Web >> Link: `https://webapp-documentvault-ne.azurewebsites.net/signin-oidc`
+    - Set `ID tokens (used for implicit and hybrid flows)`
+      - `App registrations >> AZ204-DocumentVault >> Authentication >> Section: Implicit grant and hybrid flows`
   - Add `Directory (tenant) ID` and `Application (client) ID` to Github project secrets. You can find it on `Overview` page of `AZ204-DocumentVault` registration page
     - `Github repository >> Settings >> Secrets and variables >> Actions`:
       - `CLIENTID` secret
