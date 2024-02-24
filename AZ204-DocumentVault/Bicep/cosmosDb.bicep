@@ -37,7 +37,7 @@ resource resContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/contai
       id: 'Documents'
       partitionKey: {
         paths:[
-          '/id'
+          '/userId'
         ]
         kind: 'Hash'
       }

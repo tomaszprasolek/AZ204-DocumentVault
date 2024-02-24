@@ -6,6 +6,9 @@ public sealed class Document
 {
     [JsonProperty("id")]
     public string Id { get; }
+
+    [JsonProperty("userId")]
+    public string UserId { get; }
     public string Name { get; }
     public string FileName { get; }
     public string UserName { get; }
@@ -15,6 +18,7 @@ public sealed class Document
 
     [JsonConstructor]
     public Document(string id,
+        string userId,
         string name,
         string fileName,
         string userName,
@@ -22,6 +26,7 @@ public sealed class Document
         FileLink[]? fileLinks)
     {
         Id = id;
+        UserId = userId;
         Name = name;
         FileName = fileName;
         UserName = userName;
@@ -29,9 +34,12 @@ public sealed class Document
         FileLinks = fileLinks;
     }
 
-    public Document(string id, string name, string fileName, string tagsCommaSeparated, string userName)
+    public Document(string id,
+        string userId,
+        string name, string fileName, string tagsCommaSeparated, string userName)
     {
         Id = id;
+        UserId = userId;
         Name = name;
         FileName = fileName;
         UserName = userName;

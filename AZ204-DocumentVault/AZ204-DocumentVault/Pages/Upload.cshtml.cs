@@ -4,6 +4,7 @@ using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Web;
 
 namespace AZ204_DocumentVault.Pages;
 
@@ -19,6 +20,20 @@ public class Upload : PageModel
 
     public List<Document> Documents { get; set; } = new();
     public string? DocumentDownloadLink { get; set; }
+
+    // TODO: check if this is needed. Maybe it is null on every request
+    private string _userId; 
+
+    private string UserId
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(_userId))
+                _userId = User.GetObjectId()!;
+
+            return _userId;
+        }
+    }
     
     public Upload(ILogger<IndexModel> logger, 
         IOptions<AzureConfig> azureConfig,
@@ -29,11 +44,12 @@ public class Upload : PageModel
         _logger = logger;
         _cosmosDbService = cosmosDbService;
         _storageAccountService = storageAccountService;
+       
     }
 
     public async Task<IActionResult> OnGet()
     {
-        Documents = await _cosmosDbService.GetDocumentsAsync();
+        Documents = await _cosmosDbService.GetDocumentsAsync(UserId);
         return Page();
     }
 
@@ -48,7 +64,7 @@ public class Upload : PageModel
     {
         DocumentDownloadLink = await _storageAccountService.GenerateDownloadLink(fileName, hoursToBeExpired);
         
-        await _cosmosDbService.UpdateDocument<Document>(id, fileName, hoursToBeExpired);
+        await _cosmosDbService.UpdateDocument<Document>(id, UserId, fileName, hoursToBeExpired);
         
         _logger.LogInformation("Generated link for file: {FileName}, expired after: {hoursToBeExpired}", 
             fileName, hoursToBeExpired);
@@ -60,7 +76,7 @@ public class Upload : PageModel
     {
         await _storageAccountService.DeleteBlobAsync(fileName);
         
-        await _cosmosDbService.DeleteDocument<Document>(id);
+        await _cosmosDbService.DeleteDocument<Document>(id, UserId);
 
         Message = $"File {fileName} deleted";
         return await OnGet();
@@ -94,6 +110,7 @@ public class Upload : PageModel
             {
                 // Save document data: name and tags
                 var document = new Document(Guid.NewGuid().ToString(), 
+                    UserId,
                     DocumentName, 
                     postedFile.FileName,
                     tagsField,
