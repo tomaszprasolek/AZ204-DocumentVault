@@ -4,14 +4,42 @@ Azure Document Vault with Expiry &amp; CDN Integration (Develop for Azure storag
 ## Azure resources
 
 - Azure App Service - web application to upload documents to Azure
-- Azure Storage - to store the uploaded documents
-- Azure Key Vault - to store the secrets
+- Azure Storage - store the uploaded documents
+- Azure Key Vault - store the secrets
+- Cosmos Db - store documents data and metadata
+- App registraion - to be able to log in using Azure credentials
 
 ## TODO
 - [X] Bicep - create Cosmos DB using main script
 - [X] Bicep - add Cosmos DB key to Key Vault
 - [X] Setup CI/CD in Github Actions
+- [ ] Filter data by logged in user ID
+- [ ] Azure Function - use it to generate download link to file
 - [ ] Remove publishToAzure.run - use `git filter-repo` >> https://gist.github.com/tomaszprasolek/a1d66512bf30afd5019df6b20a2255ab
+
+## How to set up the CI/CD on Github and environment on Azure
+
+- Create resource group when all other Azure resource will be placed
+- Get your principal identifier from Azure, it is needed for the next script. You can find it: `Users >> your user >> Object Id`.
+- Run Azure Bicep script: `main.bicep` (AZ204-DocumentVault/Bicep/main.bicep) and pass `Object Id` as parameter
+  - Command to run script: `az deployment group create --resource-group rg-DocumentVault-ne --template-file .\AZ204-DocumentVault\Bicep\main.bicep --parameter parPrincipalId='azure-user-object-id'`. **Remember changing the resource group name and principal id.**
+  - The User `Object Id` is needed for... **TODO: add what for is ObjectId needed** 
+- After create the resource in Azure, download publish profile from Azure:
+  - `Portal Azure >> Resource group >> App service >> Download publish profile`
+- Put it in repository secret on Github. Secret name: `AZURE_WEBAPP_PUBLISH_PROFILE`. It is needed to Github Actions, to deploy app to WebApp in Azure.
+  - `Github repository >> Settings >> Secrets and variables >> Actions >> AZURE_WEBAPP_PUBLISH_PROFILE`
+- Register the app in Azure:
+  - Open **App registrations** view in Azure and register new app
+    - `App registrations >> New registration`
+    - Enter app name
+    - Select `Accounts in this organizational directory only (Default Directory only - Single tenant)`
+    - Redirect URI >> Web >> Link: `https://webapp-documentvault-ne.azurewebsites.net/signin-oid`
+  - Add `Directory (tenant) ID` and `Application (client) ID` to Github project secrets. You can find it on `Overview` page of `AZ204-DocumentVault` registration page
+    - `Github repository >> Settings >> Secrets and variables >> Actions`:
+      - `CLIENTID` secret
+      - `TENANTID` secret
+  - Deploy app to Azure using Github Actions
+    - `Github repository >> Actions >> Workflows: Deploy to Azure Web App >> Run workflow`
 
 ## Commands
 
@@ -25,16 +53,6 @@ Create all needed resources:
 ```
 az deployment group create --resource-group rg-DocumentVault-ne --template-file .\AZ204-DocumentVault\Bicep\main.bicep --parameter parPrincipalId='azure-user-object-id'
 ```
-## Instructions how to run
-
-- Run Azure Bicep script: `main.bicep`
-- After create the resource in Azure, download publish profile from Azure and put it in repository secret on Github. Secret name: AZURE_WEBAPP_PUBLISH_PROFILE. It is needed to Github Actions, to deploy app to WebApp in Azure.
-- Register the app in Azure:
-  - Open **App registrations** view in Azure
-  - Register new app
-  - Add Redirect URI in `App registrations` to our app.
-    - `https://webapp-documentvault-ne.azurewebsites.net/signin-oidc`
-  - Add `tenatId` and `clientId` to Github project secrets
 
 ## Links 
 
