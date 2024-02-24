@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>AZ204_DocumentVault</RootNamespace>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <UserSecretsId>7140c0d6-0892-415d-9d4d-6438b900f939</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,6 +20,8 @@
         <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.5.0" />
         <PackageReference Include="Azure.Storage.Blobs" Version="12.19.1" />
         <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.31.2" />
+        <PackageReference Include="Microsoft.Identity.Web.DownstreamApi" Version="2.16.1" />
+        <PackageReference Include="Microsoft.Identity.Web.UI" Version="2.16.1" />
     </ItemGroup>
 
 </Project>

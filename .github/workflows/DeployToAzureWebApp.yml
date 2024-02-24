@@ -18,6 +18,15 @@ jobs:
       with:
         fetch-depth: 0 # Required due to the way Git works, without it this action won't be able to find any or the correct tags
 
+    # D:\Projekty\AZ204-DocumentVault\AZ204-DocumentVault\AZ204-DocumentVault\appsettings.json
+    - name: Replace env vars in file
+      uses: falnyr/replace-env-vars-action@v1.3.2
+      env:
+        TenantId: ${{ secrets.TENANTID  }}
+        ClientId: ${{ secrets.CLIENTID  }}
+      with:
+        filename: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/AZ204-DocumentVault/appsettings.json
+                   
     # Run dotnet build and publish
     - name: Publish
       run: dotnet publish ${{ env.AZURE_WEBAPP_PACKAGE_PATH }} -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp' 
