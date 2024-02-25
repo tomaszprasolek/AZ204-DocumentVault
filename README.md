@@ -64,6 +64,10 @@ az deployment group create --resource-group rg-DocumentVault-ne --template-file 
 - https://learn.microsoft.com/en-us/azure/cosmos-db/partial-document-update
 - https://learn.microsoft.com/en-us/azure/cosmos-db/partial-document-update-getting-started?tabs=dotnet
 
+### Azure Functions
+
+- https://www.youtube.com/watch?v=82QnxMp8PRY
+
 ### Others
 
 - https://github.com/AzureAD/microsoft-identity-web/wiki/web-apps
