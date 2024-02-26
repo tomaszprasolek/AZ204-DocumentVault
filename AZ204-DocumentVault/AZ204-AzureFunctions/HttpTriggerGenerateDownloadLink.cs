@@ -6,39 +6,44 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using System.IO;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace AZ204_AzureFunctions;
 
 public static class HttpTriggerGenerateDownloadLink
 {
     [FunctionName("HttpGenerateDownloadLink")]
-    public static IActionResult Run(
+    public static async Task<IActionResult> RunAsync(
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
-        [FromBody] BlobInfo blobInfo,
+        //[FromBody] BlobInfo blobInfo,
         ILogger log)
     {
         log.LogInformation("C# HTTP trigger function processed a request.");
 
+        BlobInfo blobInfo = await JsonSerializer.DeserializeAsync<BlobInfo>(req.Body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        log.LogInformation(blobInfo.ToString());
+        
+        // string link = GenerateLink(blobInfo);
+        string link = "test001";
+
+        return new OkObjectResult(link);
+    }
+
+    private static string GenerateLink(BlobInfo blobInfo)
+    {
+        return "test-link";
+        
         BlobContainerClient containerClient = GetBlobContainerClient();
 
         BlobClient blobClient = containerClient.GetBlobClient(blobInfo.FileName);
 
         DateTime expiresOn = DateTime.UtcNow.AddHours(blobInfo.HoursToBeExpired);
         Uri result = blobClient.GenerateSasUri(BlobSasPermissions.Read, new DateTimeOffset(expiresOn));
-        
-        // string name = req.Query["name"];
-        //
-        // string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-        // dynamic data = JsonConvert.DeserializeObject(requestBody);
-        // name = name ?? data?.name;
-        //
-        // return name != null
-        //     ? (ActionResult) new OkObjectResult($"Hello, {name}")
-        //     : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
-
-        return new OkObjectResult(result.ToString());
+        return result.ToString();
     }
-    
+
     private static BlobContainerClient GetBlobContainerClient()
     {
         string storageAccountKey = Environment.GetEnvironmentVariable("StorageAccountKey");
@@ -58,4 +63,9 @@ public class BlobInfo
 {
     public string FileName { get; set; }
     public int HoursToBeExpired { get; set; }
+
+    public override string ToString()
+    {
+        return $"File name: {FileName}, time left (in hours) when link expired: {HoursToBeExpired}";
+    }
 }
