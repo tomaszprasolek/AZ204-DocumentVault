@@ -66,7 +66,19 @@ az deployment group create --resource-group rg-DocumentVault-ne --template-file 
 
 ### Azure Functions
 
+- https://stackoverflow.com/a/55133438
+
+### Azure Functions
+
 - https://www.youtube.com/watch?v=82QnxMp8PRY
+
+### Azure Functions
+
+<<<<<<< HEAD
+- https://www.youtube.com/watch?v=82QnxMp8PRY
+=======
+- https://stackoverflow.com/a/55133438
+>>>>>>> a7304ed (Update README.md)
 
 ### Others
 
