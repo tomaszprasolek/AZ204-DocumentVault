@@ -13,8 +13,17 @@ Azure Document Vault with Expiry &amp; CDN Integration (Develop for Azure storag
 - [X] Bicep - create Cosmos DB using main script
 - [X] Bicep - add Cosmos DB key to Key Vault
 - [X] Setup CI/CD in Github Actions
-- [ ] Filter data by logged in user ID
-- [ ] Azure Function - use it to generate download link to file
+- [X] Filter data by logged in user ID
+- [X] Azure Function - use it to generate download link to file
+- [ ] Azure Function
+  - [ ] Create Azure Function using Bicep
+    - [ ] Add Function to has access to KeyVault
+    - [ ] Use the same service plan as App Service has
+  - [ ] Create Github Action to deploy the function to Azure
+  - [ ] Add application settings - I don't know where?? In Bicep or Github Actions?
+    - [ ] StorageAccountName
+    - [ ] ContainerName
+    - [ ] KeyVaultUri
 - [ ] Remove publishToAzure.run - use `git filter-repo` >> https://gist.github.com/tomaszprasolek/a1d66512bf30afd5019df6b20a2255ab
 
 ## How to set up the CI/CD on Github and environment on Azure
