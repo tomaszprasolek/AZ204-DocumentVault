@@ -58,8 +58,7 @@ public static class HttpTriggerGenerateDownloadLink
 
     private static async Task<string> GetSecretAsync(string secretName)
     {
-        // string keyVaultUri = Environment.GetEnvironmentVariable("KeyVaultUri")!;
-        string keyVaultUri = "https://documentskeyvault.vault.azure.net/";
+        string keyVaultUri = Environment.GetEnvironmentVariable("KeyVaultUri")!;
         var secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
         Azure.Response<KeyVaultSecret> secretResponse = await secretClient.GetSecretAsync(secretName);
         return secretResponse.Value.Value;
