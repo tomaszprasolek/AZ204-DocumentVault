@@ -76,6 +76,8 @@ az deployment group create --resource-group rg-DocumentVault-ne --template-file 
 ### Azure Functions
 
 - https://stackoverflow.com/a/55133438
+- https://www.voitanos.io/blog/how-to-create-azure-function-apps-with-bicep-step-by-step/
+- https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-first-function-bicep?tabs=CLI
 
 ### Azure Functions
 
