@@ -80,6 +80,10 @@ az deployment group create --resource-group rg-DocumentVault-ne --template-file 
 - https://learn.microsoft.com/en-us/azure/azure-functions/functions-create-first-function-bicep?tabs=CLI
 - https://www.youtube.com/watch?v=82QnxMp8PRY
 
+## Github Actions
+
+- https://github.com/Azure/functions-action/issues/147#issuecomment-1251143109
+
 ### Others
 
 - https://github.com/AzureAD/microsoft-identity-web/wiki/web-apps
