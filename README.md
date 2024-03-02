@@ -94,3 +94,4 @@ az deployment group create --resource-group rg-DocumentVault-ne --template-file 
 - https://github.com/AzureAD/microsoft-identity-web/wiki/web-apps
 - https://brettmckenzie.net/posts/the-input-content-is-invalid-because-the-required-properties-id-are-missing/
 - https://learn.microsoft.com/en-us/troubleshoot/azure/active-directory/error-code-aadsts50011-redirect-uri-mismatch
+- https://stackoverflow.com/questions/43914151/azure-functions-i-cannot-choose-consumption-plan
