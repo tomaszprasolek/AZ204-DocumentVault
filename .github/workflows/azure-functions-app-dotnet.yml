@@ -19,7 +19,12 @@
 name: Deploy Azure Function
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      funactionName:
+        description: 'Function app name'     
+        required: true
+        default: 'warning'
 
 env:
   AZURE_FUNCTIONAPP_NAME: 'functionapp-240302173355'   # set this to your function app name on Azure
