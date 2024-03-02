@@ -7,7 +7,7 @@ param parLocation string = resourceGroup().location
 resource resStorageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
   name: 'fastorageacct'
   location: parLocation
-  kind: 'StorageV2'
+  kind: 'StorageV2' // Storage
   sku: {
     name: 'Standard_LRS'
   }
@@ -70,6 +70,10 @@ resource azFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
       linuxFxVersion: 'DOTNET-ISOLATED|6.0'
       appSettings: [
         {
+          name: 'AzureWebJobsDashboard'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${resStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${azStorageAccountPrimaryAccessKey}'
+        }
+        {
           name: 'AzureWebJobsStorage'
           value: 'DefaultEndpointsProtocol=https;AccountName=${resStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${azStorageAccountPrimaryAccessKey}'
         }
@@ -82,6 +86,22 @@ resource azFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
           value: 'InstrumentationKey=${azAppInsightsInstrumentationKey}'
         }
         {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: '~4'
+        }
+        {
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: 'dotnet'
+        }
+        {
+          name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
+          value: 'false'
+        }
+        {
+          name: 'WEBSITE_ENABLE_SYNC_UPDATE_SITE'
+          value: 'true'
+        }
+        {
           name: 'StorageAccountName'
           value: 'documentvaultaz204'
         }
@@ -92,10 +112,6 @@ resource azFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
         {
           name: 'KeyVaultUri'
           value: 'https://documentskeyvault.vault.azure.net/'
-        }
-        {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: 'dotnet'
         }
       ]
     }
