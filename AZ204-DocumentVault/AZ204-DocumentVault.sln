@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AZ204-DocumentVault", "AZ204-DocumentVault\AZ204-DocumentVault.csproj", "{34B10529-A41B-435E-9062-7DAFFA6D9ACA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AZ204-AzureFunctions", "AZ204-AzureFunctions\AZ204-AzureFunctions.csproj", "{9D2C3248-A861-48CC-9432-0F8EF6FD208A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,6 +14,10 @@ Global
 		{34B10529-A41B-435E-9062-7DAFFA6D9ACA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34B10529-A41B-435E-9062-7DAFFA6D9ACA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34B10529-A41B-435E-9062-7DAFFA6D9ACA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D2C3248-A861-48CC-9432-0F8EF6FD208A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D2C3248-A861-48CC-9432-0F8EF6FD208A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D2C3248-A861-48CC-9432-0F8EF6FD208A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D2C3248-A861-48CC-9432-0F8EF6FD208A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(RiderSharedRunConfigurations) = postSolution
 		File = publishToAzure.run\Publish AZ204-DocumentVault to Azure.run.xml
