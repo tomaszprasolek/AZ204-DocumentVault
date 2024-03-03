@@ -86,11 +86,15 @@ public class Upload : PageModel
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, "https://functionapp-app.azurewebsites.net/api/GenerateDownloadLink?code=ndcC_p82_VFAfi3-G3Hg4EVkwfOEYs5aLFP8nPm-fZP5AzFuFTBUJg==");
+        
         var content = new StringContent($"{{\r\n    \"fileName\": \"{fileName}\",\r\n    \"hoursToBeExpired\": 8\r\n}}", null, "application/json");
         request.Content = content;
+        _logger.LogInformation("Sending content: {Content}", content);
+        
         HttpResponseMessage response = await client.SendAsync(request);
         _logger.LogInformation("Status code: {StatusCode}, content: {Content}", response.StatusCode, response.Content.ReadAsStringAsync());
         response.EnsureSuccessStatusCode();
+        
         return (await response.Content.ReadFromJsonAsync<DownloadLink>())!;
     }
 
