@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
+using System.Text.Json;
 
 namespace AZ204_DocumentVault.Pages;
 
@@ -66,7 +67,7 @@ public class Upload : PageModel
             {
                 FileName = fileName,
                 HoursToBeExpired = hoursToBeExpired
-            });
+            }, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
         DownloadLink? link = await response.Content.ReadFromJsonAsync<DownloadLink>();
         DocumentDownloadLink = link!.Value;
@@ -77,6 +78,18 @@ public class Upload : PageModel
             fileName, hoursToBeExpired);
         
         return await OnGet();
+    }
+
+    private async Task Test()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Post, "https://functionapp-app.azurewebsites.net/api/GenerateDownloadLink?code=ndcC_p82_VFAfi3-G3Hg4EVkwfOEYs5aLFP8nPm-fZP5AzFuFTBUJg==");
+        var content = new StringContent("{\r\n    \"fileName\": \"webApp-DocumentVault-ne.PublishSettings\",\r\n    \"hoursToBeExpired\": 8\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+        Console.WriteLine(await response.Content.ReadAsStringAsync());
+
     }
 
     public async Task<IActionResult> OnPostDeleteFile(string id, string fileName)
