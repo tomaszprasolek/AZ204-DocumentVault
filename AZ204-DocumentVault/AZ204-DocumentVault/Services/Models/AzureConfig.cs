@@ -1,6 +1,6 @@
 ﻿namespace AZ204_DocumentVault.Services.Models;
 
-public class AzureConfig
+public sealed class AzureConfig
 {
     public string StorageAccountName { get; set; } = string.Empty;
     public string StorageAccountKey { get; set; } = string.Empty;
@@ -8,4 +8,5 @@ public class AzureConfig
     public string KeyVaultUri { get; set; } = string.Empty;
     public string CosmosDbUri { get; set; } = string.Empty;
     public string Test { get; set; } = string.Empty;
+    public FunctionApp FunctionApp { get; set; }
 }

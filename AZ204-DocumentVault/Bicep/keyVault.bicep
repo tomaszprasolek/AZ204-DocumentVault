@@ -4,10 +4,6 @@ param parLocation string = resourceGroup().location
 @description('The Azure user object-id')
 param parPrincipalId string
 
-param parAppServiceObjectId string
-param parStorageAccountName string
-param parCosmosDbName string
-
 // Variables
 var varTenantId = subscription().tenantId
 
@@ -21,17 +17,6 @@ resource resKeyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
       name: 'standard'
     }
     tenantId: varTenantId
-    accessPolicies: [
-      {
-        objectId: parAppServiceObjectId
-        permissions: {
-          secrets: [
-            'get'
-          ]
-        }
-        tenantId: varTenantId
-      }
-    ]
   }
 }
 
@@ -47,34 +32,5 @@ resource resRegistryRoleAssignment 'Microsoft.Authorization/roleAssignments@2022
   }
 }
 
-// -------------------
-// Add secrets
-// -------------------
-
-// Storage account
-resource resStorageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
-  name: parStorageAccountName
-}
-
-resource resSecret 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
-  parent: resKeyVault
-  name: 'StorageAccountKey'
-  properties: {
-    value: resStorageAccount.listKeys().keys[0].value
-  }
-}
-
-// Cosmos Db
-resource resCosmosDb 'Microsoft.DocumentDB/databaseAccounts@2023-11-15' existing = {
-  name: parCosmosDbName
-}
-
-resource resSecretCosmosDbKey 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
-  parent: resKeyVault
-  name: 'CosmosDbKey'
-  properties: {
-    value: resCosmosDb.listKeys().primaryMasterKey
-  }
-}
-
+output keyVaultName string = resKeyVault.name
 output keyVaultUri string = resKeyVault.properties.vaultUri

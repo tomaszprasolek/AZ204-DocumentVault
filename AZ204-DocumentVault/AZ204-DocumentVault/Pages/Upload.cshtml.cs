@@ -1,6 +1,7 @@
 ﻿using AZ204_DocumentVault.Services;
 using AZ204_DocumentVault.Services.Models;
 using Azure.Storage.Blobs.Models;
+using Flurl;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
@@ -13,6 +14,8 @@ public class Upload : PageModel
     private readonly ILogger<IndexModel> _logger;
     private readonly ICosmosDbService _cosmosDbService;
     private readonly IStorageAccountService _storageAccountService;
+    private readonly HttpClient _httpClient;
+    private readonly AzureConfig _azureConfig;
 
     public string Message { get; set; } = string.Empty;
     public string DocumentName { get; set; } = string.Empty;
@@ -21,30 +24,21 @@ public class Upload : PageModel
     public List<Document> Documents { get; set; } = new();
     public string? DocumentDownloadLink { get; set; }
 
-    // TODO: check if this is needed. Maybe it is null on every request
-    private string _userId; 
+    private string UserId => User.GetObjectId()!;
 
-    private string UserId
-    {
-        get
-        {
-            if (string.IsNullOrWhiteSpace(_userId))
-                _userId = User.GetObjectId()!;
-
-            return _userId;
-        }
-    }
-    
     public Upload(ILogger<IndexModel> logger, 
         IOptions<AzureConfig> azureConfig,
         ICosmosDbService cosmosDbService,
-        IStorageAccountService storageAccountService
+        IStorageAccountService storageAccountService,
+        IHttpClientFactory httpClientFactory
         )
     {
         _logger = logger;
         _cosmosDbService = cosmosDbService;
         _storageAccountService = storageAccountService;
-       
+        _httpClient = httpClientFactory.CreateClient("AzureFunctionsClient");
+        _azureConfig = azureConfig.Value;
+
     }
 
     public async Task<IActionResult> OnGet()
@@ -62,7 +56,20 @@ public class Upload : PageModel
 
     public async Task<IActionResult> OnPostGenerateLink(string id, string fileName, int hoursToBeExpired)
     {
-        DocumentDownloadLink = await _storageAccountService.GenerateDownloadLink(fileName, hoursToBeExpired);
+        // DocumentDownloadLink = await _storageAccountService.GenerateDownloadLink(fileName, hoursToBeExpired);
+
+        string url = _azureConfig.FunctionApp.GenerateDownloadFunctionLink
+            .SetQueryParam("code", _azureConfig.FunctionApp.GenerateDownloadMethodFunctionKey);
+        
+        HttpResponseMessage response = await _httpClient.PostAsJsonAsync(url,
+            new
+            {
+                FileName = fileName,
+                HoursToBeExpired = hoursToBeExpired
+            });
+
+        DownloadLink? link = await response.Content.ReadFromJsonAsync<DownloadLink>();
+        DocumentDownloadLink = link!.Value;
         
         await _cosmosDbService.UpdateDocument<Document>(id, UserId, fileName, hoursToBeExpired);
         

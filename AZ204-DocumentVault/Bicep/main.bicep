@@ -32,9 +32,6 @@ module modKeyVault 'keyVault.bicep' = {
   params: {
     parLocation: parLocation
     parPrincipalId: parPrincipalId
-    parAppServiceObjectId: modAppService.outputs.outAppServiceObjectId
-    parStorageAccountName: modStorageAccount.outputs.storageAccountName
-    parCosmosDbName: modCosmosDb.outputs.cosmosDbName
   }
 }
 
@@ -47,6 +44,26 @@ module modFunctionApp 'FunctionApp/main.bicep' = {
     parStorageAccountResourceGroup: resourceGroup().name
     parKeyVaultUri: modKeyVault.outputs.keyVaultUri
     parStorageAccountContainerName: modStorageAccount.outputs.storageAccountContainerName
+    parStorageAccountName: modStorageAccount.outputs.storageAccountName
+  }
+}
+
+// Key vault - add access policies
+module modAccessPolicies 'keyVault-accessPolicies.bicep' = {
+  name: 'accessPolicies'
+  params: {
+    parAppServiceObjectId: modAppService.outputs.outAppServiceObjectId
+    parFunctionAppObjectId: modFunctionApp.outputs.outFunctionAppObjectId
+    parKeyVaultName: modKeyVault.outputs.keyVaultName
+  }
+}
+
+// Key vault - add secrets
+module modSecrets 'keyVault-secrets.bicep' = {
+  name: 'modSecrets'
+  params: {
+    parCosmosDbName: modCosmosDb.outputs.cosmosDbName
+    parKeyVaultName: modKeyVault.outputs.keyVaultName
     parStorageAccountName: modStorageAccount.outputs.storageAccountName
   }
 }

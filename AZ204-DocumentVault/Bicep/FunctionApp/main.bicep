@@ -23,3 +23,5 @@ module modFunctionApp 'functionApp.bicep' = {
     parStorageAccountName: parStorageAccountName
   }
 }
+
+output outFunctionAppObjectId string = modFunctionApp.outputs.outFunctionAppObjectId

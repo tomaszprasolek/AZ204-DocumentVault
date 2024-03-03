@@ -117,3 +117,5 @@ resource azFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
     }
   }
 }
+
+output outFunctionAppObjectId string = azFunctionApp.identity.principalId
