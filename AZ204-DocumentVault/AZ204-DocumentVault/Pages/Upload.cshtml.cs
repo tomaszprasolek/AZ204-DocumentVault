@@ -58,6 +58,7 @@ public class Upload : PageModel
 
     public async Task<IActionResult> OnPostGenerateLink(string id, string fileName, int hoursToBeExpired)
     {
+        _logger.LogInformation("Start: {Method}", nameof(OnPostGenerateLink));
         // DocumentDownloadLink = await _storageAccountService.GenerateDownloadLink(fileName, hoursToBeExpired);
 
         string url = _azureConfig.FunctionApp.GenerateDownloadFunctionLink
@@ -85,6 +86,8 @@ public class Upload : PageModel
 
     private async Task<DownloadLink> CallAzureFunctionAsync(string fileName)
     {
+        _logger.LogInformation("Start: {Method}", nameof(CallAzureFunctionAsync));
+        
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, HttpUtility.UrlEncode("https://functionapp-app.azurewebsites.net/api/GenerateDownloadLink?code=ndcC_p82_VFAfi3-G3Hg4EVkwfOEYs5aLFP8nPm-fZP5AzFuFTBUJg=="));
         
