@@ -68,8 +68,10 @@ public class Upload : PageModel
                 FileName = fileName,
                 HoursToBeExpired = hoursToBeExpired
             }, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-        DownloadLink? link = await response.Content.ReadFromJsonAsync<DownloadLink>();
+        response.EnsureSuccessStatusCode();
+        
+        // DownloadLink? link = await response.Content.ReadFromJsonAsync<DownloadLink>();
+        DownloadLink? link = await CallAzureFunctionAsync(fileName);
         DocumentDownloadLink = link!.Value;
         
         await _cosmosDbService.UpdateDocument<Document>(id, UserId, fileName, hoursToBeExpired);
@@ -80,16 +82,15 @@ public class Upload : PageModel
         return await OnGet();
     }
 
-    private async Task Test()
+    private static async Task<DownloadLink> CallAzureFunctionAsync(string fileName)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, "https://functionapp-app.azurewebsites.net/api/GenerateDownloadLink?code=ndcC_p82_VFAfi3-G3Hg4EVkwfOEYs5aLFP8nPm-fZP5AzFuFTBUJg==");
-        var content = new StringContent("{\r\n    \"fileName\": \"webApp-DocumentVault-ne.PublishSettings\",\r\n    \"hoursToBeExpired\": 8\r\n}", null, "application/json");
+        var content = new StringContent($"{{\r\n    \"fileName\": \"{fileName}\",\r\n    \"hoursToBeExpired\": 8\r\n}}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
-        Console.WriteLine(await response.Content.ReadAsStringAsync());
-
+        return (await response.Content.ReadFromJsonAsync<DownloadLink>())!;
     }
 
     public async Task<IActionResult> OnPostDeleteFile(string id, string fileName)
