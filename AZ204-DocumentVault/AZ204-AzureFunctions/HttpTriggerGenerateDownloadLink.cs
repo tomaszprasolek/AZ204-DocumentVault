@@ -1,14 +1,15 @@
 ﻿using AZ204_AzureFunctions.Models;
+using Azure;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Blobs;
 using Azure.Storage.Sas;
-using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -18,17 +19,27 @@ public static class HttpTriggerGenerateDownloadLink
 {
     [FunctionName("GenerateDownloadLink")]
     public static async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+        [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]
+        HttpRequest req,
         ILogger log)
     {
-        log.LogInformation("C# HTTP trigger function processed a request.");
+        var blobInfo = await JsonSerializer.DeserializeAsync<BlobInfo>(req.Body,
+            new JsonSerializerOptions {PropertyNameCaseInsensitive = true});
+        log.LogInformation("C# HTTP trigger function start processing a request. Request body {@Body}", blobInfo);
 
-        BlobInfo blobInfo = await JsonSerializer.DeserializeAsync<BlobInfo>(req.Body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-        log.LogInformation(blobInfo.ToString());
-        
-        string link = await GenerateLink(blobInfo);
+        string link;
 
-        return new OkObjectResult(link);
+        try
+        {
+            link = await GenerateLink(blobInfo);
+        }
+        catch (Exception e)
+        {
+            log.LogError(e, "Error, function: GenerateDownloadLink");
+            return new BadRequestResult();
+        }
+
+        return new OkObjectResult(new {DownloadLink = link});
     }
 
     private static async Task<string> GenerateLink(BlobInfo blobInfo)
@@ -47,10 +58,10 @@ public static class HttpTriggerGenerateDownloadLink
         string storageAccountKey = await GetSecretAsync("StorageAccountKey");
         string storageAccountName = Environment.GetEnvironmentVariable("StorageAccountName");
         string containerName = Environment.GetEnvironmentVariable("ContainerName");
-        
+
         string connectionString =
             $"DefaultEndpointsProtocol=https;AccountName={storageAccountName};AccountKey={storageAccountKey};EndpointSuffix=core.windows.net";
-        BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
+        var blobServiceClient = new BlobServiceClient(connectionString);
 
         BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
         return containerClient;
@@ -60,7 +71,7 @@ public static class HttpTriggerGenerateDownloadLink
     {
         string keyVaultUri = Environment.GetEnvironmentVariable("KeyVaultUri")!;
         var secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
-        Azure.Response<KeyVaultSecret> secretResponse = await secretClient.GetSecretAsync(secretName);
+        Response<KeyVaultSecret> secretResponse = await secretClient.GetSecretAsync(secretName);
         return secretResponse.Value.Value;
     }
 }
