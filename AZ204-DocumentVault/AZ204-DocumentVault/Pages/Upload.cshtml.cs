@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using System.Text.Json;
+using System.Web;
 
 namespace AZ204_DocumentVault.Pages;
 
@@ -85,7 +86,7 @@ public class Upload : PageModel
     private async Task<DownloadLink> CallAzureFunctionAsync(string fileName)
     {
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, "https://functionapp-app.azurewebsites.net/api/GenerateDownloadLink?code=ndcC_p82_VFAfi3-G3Hg4EVkwfOEYs5aLFP8nPm-fZP5AzFuFTBUJg==");
+        var request = new HttpRequestMessage(HttpMethod.Post, HttpUtility.UrlEncode("https://functionapp-app.azurewebsites.net/api/GenerateDownloadLink?code=ndcC_p82_VFAfi3-G3Hg4EVkwfOEYs5aLFP8nPm-fZP5AzFuFTBUJg=="));
         
         var content = new StringContent($"{{\r\n    \"fileName\": \"{fileName}\",\r\n    \"hoursToBeExpired\": 8\r\n}}", null, "application/json");
         request.Content = content;
