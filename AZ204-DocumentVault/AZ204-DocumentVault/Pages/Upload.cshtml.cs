@@ -64,16 +64,16 @@ public class Upload : PageModel
         string url = _azureConfig.FunctionApp.GenerateDownloadFunctionLink
             .SetQueryParam("code", _azureConfig.FunctionApp.GenerateDownloadMethodFunctionKey);
         
-        // HttpResponseMessage response = await _httpClient.PostAsJsonAsync(url,
-        //     new
-        //     {
-        //         FileName = fileName,
-        //         HoursToBeExpired = hoursToBeExpired
-        //     }, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-        // response.EnsureSuccessStatusCode();
+        HttpResponseMessage response = await _httpClient.PostAsJsonAsync(url,
+            new
+            {
+                FileName = fileName,
+                HoursToBeExpired = hoursToBeExpired
+            }, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        response.EnsureSuccessStatusCode();
         
-        // DownloadLink? link = await response.Content.ReadFromJsonAsync<DownloadLink>();
-        DownloadLink? link = await CallAzureFunctionAsync(fileName);
+        DownloadLink? link = await response.Content.ReadFromJsonAsync<DownloadLink>();
+        // DownloadLink? link = await CallAzureFunctionAsync(fileName);
         DocumentDownloadLink = link!.Value;
         
         await _cosmosDbService.UpdateDocument<Document>(id, UserId, fileName, hoursToBeExpired);
