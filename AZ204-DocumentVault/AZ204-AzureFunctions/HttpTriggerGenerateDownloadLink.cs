@@ -49,7 +49,7 @@ public static class HttpTriggerGenerateDownloadLink
         BlobClient blobClient = containerClient.GetBlobClient(blobInfo.FileName);
 
         if (!await blobClient.ExistsAsync())
-            throw new Exception($"Blog not exist: {blobInfo.FileName}");
+            throw new Exception($"Blob not exist: {blobInfo.FileName}");
 
         DateTime expiresOn = DateTime.UtcNow.AddHours(blobInfo.HoursToBeExpired);
         Uri result = blobClient.GenerateSasUri(BlobSasPermissions.Read, new DateTimeOffset(expiresOn));
