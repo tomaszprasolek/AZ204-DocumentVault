@@ -1,16 +1,16 @@
 // Parameters
 param parLocation string = resourceGroup().location
+param parStorageAccountResourceGroup string
+param parStorageAccountName string
+param parStorageAccountContainerName string
+param parKeyVaultUri string
 
 // ------------------------------------------------
-// Create storage account for function app prereq
+// Get storage account
 // ------------------------------------------------
-resource resStorageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
-  name: 'fastorageacct'
-  location: parLocation
-  kind: 'StorageV2' // Storage
-  sku: {
-    name: 'Standard_LRS'
-  }
+resource resStorageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
+  name: parStorageAccountName
+  scope: resourceGroup(parStorageAccountResourceGroup)
 }
 
 var azStorageAccountPrimaryAccessKey = resStorageAccount.listKeys().keys[0].value
@@ -103,15 +103,15 @@ resource azFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'StorageAccountName'
-          value: 'documentvaultaz204'
+          value: resStorageAccount.name
         }
         {
           name: 'ContainerName'
-          value: 'documents'
+          value: parStorageAccountContainerName
         }
         {
           name: 'KeyVaultUri'
-          value: 'https://documentskeyvault.vault.azure.net/'
+          value: parKeyVaultUri
         }
       ]
     }

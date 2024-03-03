@@ -76,3 +76,5 @@ resource resSecretCosmosDbKey 'Microsoft.KeyVault/vaults/secrets@2021-11-01-prev
     value: resCosmosDb.listKeys().primaryMasterKey
   }
 }
+
+output keyVaultUri string = resKeyVault.properties.vaultUri

@@ -38,3 +38,4 @@ resource resStorageAccountContributorRoleAssignment 'Microsoft.Authorization/rol
 }
 
 output storageAccountName string = resStorageAccount.name
+output storageAccountContainerName string = resBlobContainer.name

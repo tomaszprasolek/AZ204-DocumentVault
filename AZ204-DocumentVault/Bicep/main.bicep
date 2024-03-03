@@ -37,3 +37,16 @@ module modKeyVault 'keyVault.bicep' = {
     parCosmosDbName: modCosmosDb.outputs.cosmosDbName
   }
 }
+
+// Function app
+module modFunctionApp 'FunctionApp/main.bicep' = {
+  scope: subscription()
+  name: 'functionApp'
+  params: {
+    parLocation: parLocation
+    parStorageAccountResourceGroup: resourceGroup().name
+    parKeyVaultUri: modKeyVault.outputs.keyVaultUri
+    parStorageAccountContainerName: modStorageAccount.outputs.storageAccountContainerName
+    parStorageAccountName: modStorageAccount.outputs.storageAccountName
+  }
+}
