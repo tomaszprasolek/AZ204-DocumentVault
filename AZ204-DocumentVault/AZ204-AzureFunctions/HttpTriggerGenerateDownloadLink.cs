@@ -35,8 +35,8 @@ public static class HttpTriggerGenerateDownloadLink
         }
         catch (Exception e)
         {
-            log.LogError(e, "Error, function: GenerateDownloadLink");
-            return new BadRequestResult();
+            log.LogError(e, e.ToString());
+            return new BadRequestObjectResult(e.ToString());
         }
 
         return new OkObjectResult(new {DownloadLink = link});
