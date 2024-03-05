@@ -25,6 +25,7 @@ Azure Document Vault with Expiry &amp; CDN Integration (Develop for Azure storag
     - [X] ContainerName
     - [X] KeyVaultUri
 - [ ] Remove publishToAzure.run - use `git filter-repo` >> https://gist.github.com/tomaszprasolek/a1d66512bf30afd5019df6b20a2255ab
+- [ ] Make pipeline to run Bicep script and create infrastructure in the Azure
 
 ## How to set up the CI/CD on Github and environment on Azure
 
