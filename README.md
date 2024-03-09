@@ -118,3 +118,4 @@ az deployment group create --resource-group rg-DocumentVault-ne --template-file 
 ## TODO
 - [ ] Make pipeline to run Bicep script and create infrastructure in the Azure
 - [ ] Add Azure Function, timger trigger - remove expired links from Azure CosmosDb
+- [ ] Add CDN integration
