@@ -61,7 +61,7 @@ public class Upload : PageModel
 
         DocumentDownloadLink = await GetDownloadLinkFromAzureFunction(fileName, hoursToBeExpired);
         
-        await _cosmosDbService.UpdateDocument<Document>(id, UserId, fileName, hoursToBeExpired);
+        await _cosmosDbService.UpdateDocument<Document>(id, UserId, DocumentDownloadLink, hoursToBeExpired);
         
         _logger.LogInformation("Generated link for file: {FileName}, expired after: {hoursToBeExpired}", 
             fileName, hoursToBeExpired);

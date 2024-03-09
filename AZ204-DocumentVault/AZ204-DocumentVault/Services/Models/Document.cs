@@ -12,9 +12,9 @@ public sealed class Document
     public string Name { get; }
     public string FileName { get; }
     public string UserName { get; }
-    public string[]? Tags { get; }
-    
-    public FileLink[]? FileLinks { get; private set; }
+    public string[]? Tags { get; } = Array.Empty<string>();
+
+    public FileLink[]? FileLinks { get; set; } = Array.Empty<FileLink>();
 
     [JsonConstructor]
     public Document(string id,

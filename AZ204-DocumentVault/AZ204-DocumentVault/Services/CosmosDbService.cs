@@ -70,10 +70,15 @@ public sealed class CosmosDbService : ICosmosDbService
     public async Task UpdateDocument<T>(string id, string userId, string documentDownloadLink, int hoursToBeExpired)
     {
         Container container = await GetCosmosDbContainerAsync();
-        await container.PatchItemAsync<T>(id, new PartitionKey(userId), new List<PatchOperation>
+        
+        FileLink fileLink = new(documentDownloadLink, DateTime.UtcNow.AddHours(hoursToBeExpired));
+
+        List<PatchOperation> operations = new List<PatchOperation> 
         {
-            PatchOperation.Add("/FileLinks/-", new FileLink(documentDownloadLink, DateTime.UtcNow.AddHours(hoursToBeExpired)))
-        });
+            PatchOperation.Add("/FileLinks/-", fileLink)
+        };
+        
+        await container.PatchItemAsync<T>(id, new PartitionKey(userId), operations);
     }
     
     private async Task<Container> GetCosmosDbContainerAsync()
