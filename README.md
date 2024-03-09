@@ -4,9 +4,9 @@ Azure Document Vault with Expiry &amp; CDN Integration
 
 > Project created in purpose to learn some things needed to pass AZ-204 exam. 
 
-## Technologies used
+## Features
 
-I create the ASP.Net Core Web application (Razor Pages). This very very simple files storage like OneDrive.
+I created the ASP.Net Core Web application (Razor Pages). This very very simple files storage like OneDrive.
 
 Features:
 - Authorization: only logged in user can use it. Only users from my domain: `tomaszprasolekgmail.onmicrosoft.com` can log in.
@@ -17,14 +17,21 @@ Features:
 - Generate download link to the files. User must select an expiration time for it: 1/2/4 or 8 hours.
   - That link can be send to someone else to download it. That other person does not must to have the account in this app.
 
-## Azure resources
+> **Note:** The UI is very simple and minimalistic :-) I want to point out that I am not the frontend developer, I had little experience with HTML and CSS more then 10 years ago.
 
-- Azure App Service - web application to upload documents to Azure
-- Azure Storage - store the uploaded documents
-- Azure Key Vault - store the secrets
-- Cosmos Db - store documents data and metadata
-- App registraion - to be able to log in using Azure credentials (OpenId Connect)
-- Azure Function (HTTP trigger) to generate download link for blob
+![Upload page](Resources/upload-page.png)
+
+## Technologies used
+
+- **ASP.NET Core Web application (Razor Pages).** - web application
+- **Azure App Service** - hosting for web application
+- **Azure Storage** - stores the uploaded files
+- **Azure Key Vault** - stores the secrets
+- **Cosmos Db** - stores files data and metadata
+- **App registraion** - to be able to log in using Azure credentials (OpenId Connect)
+- **Azure Function** (HTTP trigger) to generate download link for blob
+- **GitHub Actions** to do deploy web application and Azure Function to the Azure
+- **Bicep** scripts - creates all infrastracture in Azure
 
 ## TODO
 - [X] Bicep - create Cosmos DB using main script
