@@ -4,11 +4,12 @@ Azure Document Vault with Expiry &amp; CDN Integration
 
 > Project created in purpose to learn some things needed to pass AZ-204 exam. 
 
-## Features
+## App
 
-I created the ASP.Net Core Web application (Razor Pages). This very very simple files storage like OneDrive.
+I created the ASP.NET Core Web application (Razor Pages). This very very simple files storage like OneDrive.
 
-Features:
+### Features:
+
 - Authorization: only logged in user can use it. Only users from my domain: `tomaszprasolekgmail.onmicrosoft.com` can log in.
 - Add files with name and tags.
 - See the list of all your files.
@@ -34,25 +35,6 @@ Features:
 - **Bicep** scripts - creates all infrastracture in Azure
 
 ![Resource diagram](Resources/ResourcesDiagram.png)
-
-## TODO
-- [X] Bicep - create Cosmos DB using main script
-- [X] Bicep - add Cosmos DB key to Key Vault
-- [X] Setup CI/CD in Github Actions
-- [X] Filter data by logged in user ID
-- [X] Azure Function - use it to generate download link to file
-- [ ] Azure Function
-  - [X] Create Azure Function using Bicep
-    - [ ] Add Function to has access to KeyVault
-    - [X] Use the same service plan as App Service has. **Need to create the new service plan**
-  - [X] Create Github Action to deploy the function to Azure
-  - [X] Add application settings - I don't know where?? **Add settings in Bicep scripts** 
-    - [X] StorageAccountName
-    - [X] ContainerName
-    - [X] KeyVaultUri
-- [ ] Remove publishToAzure.run - use `git filter-repo` >> https://gist.github.com/tomaszprasolek/a1d66512bf30afd5019df6b20a2255ab
-- [ ] Make pipeline to run Bicep script and create infrastructure in the Azure
-- [ ] Add Azure Function, timger trigger - remove expired links from Azure CosmosDb
 
 ## How to set up the CI/CD on Github and environment on Azure
 
@@ -132,3 +114,8 @@ az deployment group create --resource-group rg-DocumentVault-ne --template-file 
 - https://brettmckenzie.net/posts/the-input-content-is-invalid-because-the-required-properties-id-are-missing/
 - https://learn.microsoft.com/en-us/troubleshoot/azure/active-directory/error-code-aadsts50011-redirect-uri-mismatch
 - https://stackoverflow.com/questions/43914151/azure-functions-i-cannot-choose-consumption-plan
+
+## TODO
+- [ ] Remove publishToAzure.run - use `git filter-repo` >> https://gist.github.com/tomaszprasolek/a1d66512bf30afd5019df6b20a2255ab
+- [ ] Make pipeline to run Bicep script and create infrastructure in the Azure
+- [ ] Add Azure Function, timger trigger - remove expired links from Azure CosmosDb
