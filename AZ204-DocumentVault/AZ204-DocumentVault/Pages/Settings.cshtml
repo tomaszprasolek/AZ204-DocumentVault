@@ -1,0 +1,12 @@
+﻿@page
+@model AZ204_DocumentVault.Pages.Settings
+@{
+    ViewData["Title"] = "Settings";
+}
+
+<div>
+    @foreach (string setting in Model.AppSettings)
+    {
+        <p>@setting</p>
+    }
+</div>

@@ -7,6 +7,5 @@ public sealed class AzureConfig
     public string ContainerName { get; set; } = string.Empty;
     public string KeyVaultUri { get; set; } = string.Empty;
     public string CosmosDbUri { get; set; } = string.Empty;
-    public string Test { get; set; } = string.Empty;
     public FunctionApp FunctionApp { get; set; }
 }
