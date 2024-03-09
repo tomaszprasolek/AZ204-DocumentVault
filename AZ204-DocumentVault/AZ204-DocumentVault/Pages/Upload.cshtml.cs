@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using System.Text.Json;
-using System.Web;
 
 namespace AZ204_DocumentVault.Pages;
 
@@ -59,8 +58,20 @@ public class Upload : PageModel
     public async Task<IActionResult> OnPostGenerateLink(string id, string fileName, int hoursToBeExpired)
     {
         _logger.LogInformation("Start: {Method}", nameof(OnPostGenerateLink));
-        // DocumentDownloadLink = await _storageAccountService.GenerateDownloadLink(fileName, hoursToBeExpired);
 
+        DocumentDownloadLink = await GetDownloadLinkFromAzureFunction(fileName, hoursToBeExpired);
+        
+        await _cosmosDbService.UpdateDocument<Document>(id, UserId, fileName, hoursToBeExpired);
+        
+        _logger.LogInformation("Generated link for file: {FileName}, expired after: {hoursToBeExpired}", 
+            fileName, hoursToBeExpired);
+        
+        return await OnGet();
+    }
+
+    private async Task<string> GetDownloadLinkFromAzureFunction(string fileName,
+        int hoursToBeExpired)
+    {
         string url = _azureConfig.FunctionApp.GenerateDownloadFunctionLink
             .SetQueryParam("code", _azureConfig.FunctionApp.GenerateDownloadMethodFunctionKey);
         
@@ -73,33 +84,7 @@ public class Upload : PageModel
         response.EnsureSuccessStatusCode();
         
         DownloadLink? link = await response.Content.ReadFromJsonAsync<DownloadLink>();
-        // DownloadLink? link = await CallAzureFunctionAsync(fileName);
-        DocumentDownloadLink = link!.Value;
-        
-        await _cosmosDbService.UpdateDocument<Document>(id, UserId, fileName, hoursToBeExpired);
-        
-        _logger.LogInformation("Generated link for file: {FileName}, expired after: {hoursToBeExpired}", 
-            fileName, hoursToBeExpired);
-        
-        return await OnGet();
-    }
-
-    private async Task<DownloadLink> CallAzureFunctionAsync(string fileName)
-    {
-        _logger.LogInformation("Start: {Method}", nameof(CallAzureFunctionAsync));
-        
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, HttpUtility.UrlEncode("https://functionapp-app.azurewebsites.net/api/GenerateDownloadLink?code=ndcC_p82_VFAfi3-G3Hg4EVkwfOEYs5aLFP8nPm-fZP5AzFuFTBUJg=="));
-        
-        var content = new StringContent($"{{\r\n    \"fileName\": \"{fileName}\",\r\n    \"hoursToBeExpired\": 8\r\n}}", null, "application/json");
-        request.Content = content;
-        _logger.LogInformation("Sending content: {Content}", content);
-        
-        HttpResponseMessage response = await client.SendAsync(request);
-        _logger.LogInformation("Status code: {StatusCode}, content: {Content}", response.StatusCode, response.Content.ReadAsStringAsync());
-        response.EnsureSuccessStatusCode();
-        
-        return (await response.Content.ReadFromJsonAsync<DownloadLink>())!;
+        return link!.Value;
     }
 
     public async Task<IActionResult> OnPostDeleteFile(string id, string fileName)
