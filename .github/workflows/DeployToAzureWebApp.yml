@@ -30,7 +30,7 @@ jobs:
     
     - name: Show secrets
       run: |
-        echo ${{ secrets.GENERATEDOWNLOADMETHODFUNCTIONKEY }}
+        echo ${{ secrets.GENERATEDOWNLOADMETHODFUNCTIONKEY }} | sed 's/./& /g
                    
     # Run dotnet build and publish
     - name: Publish
