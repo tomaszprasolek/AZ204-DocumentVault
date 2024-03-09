@@ -33,6 +33,8 @@ Features:
 - **GitHub Actions** to do deploy web application and Azure Function to the Azure
 - **Bicep** scripts - creates all infrastracture in Azure
 
+![Resource diagram](Resources/ResourcesDiagram.png)
+
 ## TODO
 - [X] Bicep - create Cosmos DB using main script
 - [X] Bicep - add Cosmos DB key to Key Vault
