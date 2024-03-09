@@ -22,11 +22,15 @@ jobs:
     - name: Replace env vars in file
       uses: falnyr/replace-env-vars-action@v1.3.2
       env:
-        TenantId: ${{ secrets.TENANTID  }}
-        ClientId: ${{ secrets.CLIENTID  }}
-        GenerateDownloadMethodFunctionKey: ${{ secrets.GENERATEDOWNLOADMETHODFUNCTIONKEY  }}
+        TenantId: ${{ secrets.TENANTID }}
+        ClientId: ${{ secrets.CLIENTID }}
+        GenerateDownloadMethodFunctionKey: ${{ secrets.GENERATEDOWNLOADMETHODFUNCTIONKEY }}
       with:
         filename: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/appsettings.json
+    
+    - name: Show secrets
+      run: |
+        echo ${{ secrets.GENERATEDOWNLOADMETHODFUNCTIONKEY }}
                    
     # Run dotnet build and publish
     - name: Publish
