@@ -1,5 +1,21 @@
 # AZ204-DocumentVault
-Azure Document Vault with Expiry &amp; CDN Integration (Develop for Azure storage)
+
+Azure Document Vault with Expiry &amp; CDN Integration
+
+> Project created in purpose to learn some things needed to pass AZ-204 exam. 
+
+## Technologies used
+
+I create the ASP.Net Core Web application (Razor Pages). This very very simple files storage like OneDrive.
+
+Features:
+- Authorization: only logged in user can use it. Only users from my domain: `tomaszprasolekgmail.onmicrosoft.com` can log in.
+- Add files with name and tags.
+- See the list of all your files.
+- Download the files.
+- Delete the files.
+- Generate download link to the files. User must select an expiration time for it: 1/2/4 or 8 hours.
+  - That link can be send to someone else to download it. That other person does not must to have the account in this app.
 
 ## Azure resources
 
@@ -7,7 +23,8 @@ Azure Document Vault with Expiry &amp; CDN Integration (Develop for Azure storag
 - Azure Storage - store the uploaded documents
 - Azure Key Vault - store the secrets
 - Cosmos Db - store documents data and metadata
-- App registraion - to be able to log in using Azure credentials
+- App registraion - to be able to log in using Azure credentials (OpenId Connect)
+- Azure Function (HTTP trigger) to generate download link for blob
 
 ## TODO
 - [X] Bicep - create Cosmos DB using main script
@@ -26,6 +43,7 @@ Azure Document Vault with Expiry &amp; CDN Integration (Develop for Azure storag
     - [X] KeyVaultUri
 - [ ] Remove publishToAzure.run - use `git filter-repo` >> https://gist.github.com/tomaszprasolek/a1d66512bf30afd5019df6b20a2255ab
 - [ ] Make pipeline to run Bicep script and create infrastructure in the Azure
+- [ ] Add Azure Function, timger trigger - remove expired links from Azure CosmosDb
 
 ## How to set up the CI/CD on Github and environment on Azure
 
