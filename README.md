@@ -29,6 +29,8 @@ Azure Document Vault with Expiry &amp; CDN Integration (Develop for Azure storag
 
 ## How to set up the CI/CD on Github and environment on Azure
 
+### Web App
+
 - Create resource group when all other Azure resource will be placed
 - Get your principal identifier from Azure, it is needed for the next script. You can find it: `Users >> your user >> Object Id`.
 - Run Azure Bicep script: `main.bicep` (AZ204-DocumentVault/Bicep/main.bicep) and pass `Object Id` as parameter
@@ -52,6 +54,16 @@ Azure Document Vault with Expiry &amp; CDN Integration (Develop for Azure storag
       - `TENANTID` secret
   - Deploy app to Azure using Github Actions
     - `Github repository >> Actions >> Workflows: Deploy to Azure Web App >> Run workflow`
+
+### Azure Function
+
+- [???] CLI - create RBAC credentials [???]
+- After deploy the Azure Function, need to copy function URL to Github project secrets:
+  - Resource group: `rg-DocumentVault-FunctionApp-ne`
+  - Function app: `functionApp-app`
+  - Overview tab >> Functions >> click function `GenerateDownloadLink`
+  - Click `Get Function URL` on Overview tab
+  - Copy function code and paste in in Github project secrets in variable `GENERATEDOWNLOADMETHODFUNCTIONKEY`
 
 ## Commands
 
