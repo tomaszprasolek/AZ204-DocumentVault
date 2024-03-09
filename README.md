@@ -1,6 +1,6 @@
 # AZ204-DocumentVault
 
-Azure Document Vault with Expiry &amp; CDN Integration
+Azure Document Vault with Expiry
 
 > Project created in purpose to learn some things needed to pass AZ-204 exam. 
 
@@ -116,6 +116,5 @@ az deployment group create --resource-group rg-DocumentVault-ne --template-file 
 - https://stackoverflow.com/questions/43914151/azure-functions-i-cannot-choose-consumption-plan
 
 ## TODO
-- [ ] Remove publishToAzure.run - use `git filter-repo` >> https://gist.github.com/tomaszprasolek/a1d66512bf30afd5019df6b20a2255ab
 - [ ] Make pipeline to run Bicep script and create infrastructure in the Azure
 - [ ] Add Azure Function, timger trigger - remove expired links from Azure CosmosDb
