@@ -24,6 +24,7 @@ jobs:
       env:
         TenantId: ${{ secrets.TENANTID  }}
         ClientId: ${{ secrets.CLIENTID  }}
+        GenerateDownloadMethodFunctionKey: ${{ secrets.GENERATEDOWNLOADMETHODFUNCTIONKEY  }}
       with:
         filename: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/appsettings.json
                    
