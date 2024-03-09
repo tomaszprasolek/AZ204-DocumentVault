@@ -1,4 +1,4 @@
-name: Deploy to Azure Wep App
+name: Deploy Wep App
 
 on:
   workflow_dispatch
